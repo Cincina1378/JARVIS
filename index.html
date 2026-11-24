@@ -3,549 +3,305 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#020812">
 <title>J.A.R.V.I.S.</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#020711;color:#bceeff;font-family:Arial;overflow:hidden}
-#standby{position:fixed;inset:0;background:#000;display:grid;place-items:center;z-index:10}
-#standby h1{letter-spacing:12px;text-shadow:0 0 30px #00aeff;animation:pulse 2s infinite}
-@keyframes pulse{50%{opacity:.4}}
-#boot{display:none;position:fixed;inset:0;background:#01050c;z-index:9;place-items:center;flex-direction:column}
-#boot.show{display:flex}
-#boot h1{font-size:clamp(30px,8vw,65px);letter-spacing:10px;text-shadow:0 0 25px #00aeff;transition:1.5s}
-#boot h1.move{transform:translateX(35vw) scale(.3)}
-#bootText{font:12px monospace;line-height:2;text-align:center;color:#65dfff}
-#app{display:none;position:fixed;inset:0;background:radial-gradient(circle,#092d49,#020711 65%)}
-#app.active{display:block}
-#top{position:absolute;top:15px;left:20px;right:20px;display:flex;justify-content:space-between;font:12px monospace;letter-spacing:3px}
-.panel{position:absolute;width:230px;padding:13px;border:1px solid #168dc4;background:#041b2dcc;box-shadow:0 0 20px #008cff33;backdrop-filter:blur(8px)}
-.panel h3{font-size:11px;letter-spacing:2px;color:#67dfff}
-.panel p{font-size:12px;line-height:1.5}
-#weather{top:15%;left:15px}
-#status{top:15%;right:15px}
-#notes{bottom:20px;left:15px}
-#chat{bottom:20px;right:15px;width:min(330px,45vw)}
-#chatLog{height:100px;overflow:auto;font-size:12px}
-#chatInput{width:100%;padding:10px;background:#00101d;color:white;border:1px solid #168dc4}
-#core{position:absolute;left:50%;top:50%;width:min(48vw,400px);aspect-ratio:1;transform:translate(-50%,-50%);border:2px solid #25caff;border-radius:50%;box-shadow:0 0 35px #008cff,inset 0 0 30px #008cff;animation:rotate 12s linear infinite}
-#core:before,#core:after{content:"";position:absolute;inset:12%;border:1px dashed #57dfff;border-radius:50%}
-#core:after{inset:27%;border-style:solid}
-@keyframes rotate{to{transform:translate(-50%,-50%) rotate(360deg)}}
-#coreText{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font:13px monospace;letter-spacing:4px;text-align:center}
-#ultron{display:none;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:150px;height:240px;border:2px solid #55dfff;background:linear-gradient(130deg,#164d70,#061322);clip-path:polygon(20% 0,80% 0,100% 35%,85% 100%,15% 100%,0 35%);filter:drop-shadow(0 0 20px #00aaff)}
-#ultron.show{display:block;animation:appear 1s}
-#ultron:before{content:"";position:absolute;top:35%;left:15%;right:15%;height:20%;border-top:3px solid #aafaff;border-bottom:3px solid #aafaff;box-shadow:0 0 20px #00bfff}
-@keyframes appear{from{opacity:0;transform:translate(-50%,-50%) scale(.1)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
-#camera{position:fixed;right:8px;bottom:8px;width:110px;opacity:.3;transform:scaleX(-1)}
-#bottom{position:absolute;bottom:8px;left:0;right:0;text-align:center;font:10px monospace;letter-spacing:3px}
+:root{--blue:#00c8ff;--cyan:#75edff;--dark:#020812}
+body{margin:0;background:#020812;color:#c9f8ff;font-family:Arial,sans-serif;overflow:hidden}
+#standby{position:fixed;inset:0;background:radial-gradient(circle,#071b2a,#02050b 65%);z-index:20;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center}
+#standby h1{font-size:clamp(35px,8vw,75px);letter-spacing:12px;color:#69eaff;text-shadow:0 0 25px #00bfff;margin:0}
+#standby p{color:#7aaab9;letter-spacing:3px;font-size:12px;margin-top:22px}
+#permission{position:absolute;bottom:35px;border:1px solid #087eaa;background:#061a28;color:#a8f5ff;padding:13px 18px;border-radius:8px;font-size:12px;max-width:85%;line-height:1.5}
+#app{display:none;position:fixed;inset:0;background:radial-gradient(ellipse at center,#092238 0%,#030b15 48%,#010409 100%)}
+#grid{position:absolute;inset:0;opacity:.16;background-image:linear-gradient(#00aaff22 1px,transparent 1px),linear-gradient(90deg,#00aaff22 1px,transparent 1px);background-size:38px 38px}
+#top{position:absolute;top:18px;left:20px;right:20px;display:flex;justify-content:space-between;font-size:11px;letter-spacing:2px;color:#69dfff}
+#core{position:absolute;left:50%;top:48%;width:min(55vw,330px);height:min(55vw,330px);transform:translate(-50%,-50%);display:grid;place-items:center}
+.ring{position:absolute;border:1px solid #00bfff88;border-radius:50%;box-shadow:0 0 18px #00bfff44,inset 0 0 18px #00bfff22}
+.r1{width:100%;height:100%;border-top:3px solid #8af5ff;animation:spin 9s linear infinite}
+.r2{width:82%;height:82%;border-left:3px solid #00aaff;animation:spin 6s linear infinite reverse}
+.r3{width:62%;height:62%;border-right:3px solid #80efff;animation:spin 4s linear infinite}
+.r4{width:43%;height:43%;border-bottom:3px solid #00bfff;animation:spin 3s linear infinite reverse}
+#reactor{width:24%;height:24%;border-radius:50%;background:radial-gradient(circle,#fff,#70eaff 20%,#0088cc 48%,#001b35 75%);box-shadow:0 0 35px #00bfff,0 0 80px #0088ff;animation:pulse 2s infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{50%{transform:scale(.83);filter:brightness(1.7)}}
+.panel{position:absolute;border:1px solid #00bfff66;background:#041a2a99;box-shadow:0 0 18px #0077aa22;padding:13px;border-radius:8px;backdrop-filter:blur(7px);font-size:12px}
+.panel h3{font-size:11px;letter-spacing:2px;color:#55dfff;margin:0 0 9px}
+#leftPanel{left:18px;top:22%;width:190px}
+#rightPanel{right:18px;top:22%;width:190px}
+#bottomPanel{left:50%;bottom:22px;transform:translateX(-50%);width:min(90%,540px);text-align:center}
+#status{color:#6eeaff;line-height:1.6}
+#log{height:95px;overflow:auto;text-align:left;color:#9edce8;line-height:1.5}
+#chat{display:flex;gap:6px;margin-top:9px}
+#chat input{min-width:0;flex:1;background:#03101b;border:1px solid #087eaa;color:white;padding:10px;border-radius:5px;outline:none}
+#chat button{background:#075273;color:white;border:1px solid #00bfff;padding:8px 13px;border-radius:5px}
+#camera{position:absolute;right:18px;bottom:150px;width:115px;border:1px solid #00bfff88;border-radius:8px;opacity:.65;transform:scaleX(-1)}
+#bootText{position:absolute;left:50%;top:12%;transform:translateX(-50%);font-size:12px;letter-spacing:3px;color:#a8f7ff;text-align:center;width:90%}
+#ultron{display:none;position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);font-size:clamp(65px,18vw,140px);color:#6beaff;text-shadow:0 0 20px #00bfff,0 0 55px #0088ff;filter:drop-shadow(0 0 20px #00bfff);animation:ultronIn 1.5s ease}
+@keyframes ultronIn{from{opacity:0;transform:translate(-50%,-50%) scale(.1) rotate(-90deg)}to{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(0)}}
+#ultron small{display:block;font-size:12px;letter-spacing:5px;text-align:center}
+#toast{position:absolute;top:75px;left:50%;transform:translateX(-50%);color:#aaf5ff;font-size:12px;text-align:center}
 @media(max-width:650px){
-.panel{width:42vw;padding:8px}
-#weather{top:12%;left:5px}
-#status{top:12%;right:5px}
-#notes{bottom:7%;left:5px}
-#chat{bottom:7%;right:5px}
-#core{width:45vw}
+ #leftPanel{left:8px;top:15%;width:145px}
+ #rightPanel{right:8px;top:15%;width:145px}
+ #bottomPanel{bottom:12px}
+ #camera{bottom:165px;width:90px;right:8px}
+ .panel{font-size:10px;padding:9px}
 }
 </style>
 </head>
 <body>
 
-<div id="standby"><h1>J.A.R.V.I.S.</h1></div>
-
-<div id="boot">
-<div id="bootLogo"><h1>J.A.R.V.I.S.</h1></div>
-<div id="bootText"></div>
+<div id="standby">
+ <h1>J.A.R.V.I.S.</h1>
+ <p>SİSTEM BEKLEME MODUNDA</p>
+ <div id="permission">İlk kullanım: Mikrofon ve kamera izni için ekrana bir kez dokun. İzin verildikten sonra sistemi iki alkışla kontrol edebilirsin.</div>
 </div>
 
 <div id="app">
-<div id="top">
-<span>STARK INDUSTRIES // J.A.R.V.I.S.</span>
-<span id="clock"></span>
+ <div id="grid"></div>
+ <div id="top"><span>STARK INDUSTRIES // J.A.R.V.I.S.</span><span id="clock">--:--:--</span></div>
+ <div id="bootText">SİSTEM BAŞLATILIYOR...</div>
+ <div id="core">
+  <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div><div class="ring r4"></div><div id="reactor"></div>
+ </div>
+ <div id="ultron">◈<small>ULTRON PROTOKOLÜ</small></div>
+ <div class="panel" id="leftPanel"><h3>SİSTEM DURUMU</h3><div id="status">Bağlantı kuruluyor...</div></div>
+ <div class="panel" id="rightPanel"><h3>ÇEVRE BİLGİSİ</h3><div id="weather">Konum bekleniyor...</div></div>
+ <div class="panel" id="bottomPanel">
+  <h3>J.A.R.V.I.S. İLETİŞİM</h3>
+  <div id="log">Sistem hazır olduğunda sizinle konuşmaya başlayacağım.</div>
+  <div id="chat"><input id="message" placeholder="JARVIS'e mesaj yaz..."><button id="send">GÖNDER</button></div>
+ </div>
+ <video id="camera" autoplay muted playsinline></video>
+ <div id="toast"></div>
 </div>
-
-<div id="core"></div>
-<div id="coreText">J.A.R.V.I.S.<br>ONLINE</div>
-<div id="ultron"></div>
-
-<div class="panel" id="weather">
-<h3>ATMOSPHERIC DATA</h3>
-<p id="weatherText">Konum bekleniyor...</p>
-<p id="weatherMore"></p>
-</div>
-
-<div class="panel" id="status">
-<h3>SYSTEM STATUS</h3>
-<p id="micStatus">MIC: WAITING</p>
-<p id="camStatus">CAM: WAITING</p>
-<p id="handStatus">HAND: SEARCHING</p>
-<p>AI: ONLINE</p>
-</div>
-
-<div class="panel" id="notes">
-<h3>PERSONAL MEMORY</h3>
-<p id="noteText">Henüz not yok.</p>
-</div>
-
-<div class="panel" id="chat">
-<h3>J.A.R.V.I.S. COMMUNICATION</h3>
-<div id="chatLog"></div>
-<input id="chatInput" placeholder="Konuş veya yaz..." autocomplete="off">
-</div>
-
-<div id="bottom">TWO CLAPS // ACTIVATE SYSTEM</div>
-</div>
-
-<video id="camera" autoplay playsinline muted></video>
-
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
 
 <script>
 const $=id=>document.getElementById(id);
+let active=false,ultron=false,micStream=null,cameraStream=null;
+let audioContext=null,analyser=null,source=null;
+let clapTimes=[],recording=false,recorder=null,recordChunks=[];
+let speechStart=0,lastLoud=0,voiceBusy=false,sessionId=localStorage.getItem("jarvis_session");
+if(!sessionId){sessionId=crypto.randomUUID();localStorage.setItem("jarvis_session",sessionId)}
+let permissionGranted=false;
 
-let active=false;
-let micStream=null;
-let cameraStream=null;
-let audioContext=null;
-let analyser=null;
-let recording=false;
-let recorder=null;
-let chunks=[];
-let lastSound=0;
-let claps=[];
-let processing=false;
-let voiceEnabled=true;
-let hands=null;
-let cameraRunner=null;
-
-const clientId=localStorage.getItem("jarvis-client")||crypto.randomUUID();
-localStorage.setItem("jarvis-client",clientId);
-
-let history=JSON.parse(localStorage.getItem("jarvis-history")||"[]");
-
-function log(who,text){
- const p=document.createElement("p");
- p.textContent=who+": "+text;
- $("chatLog").appendChild(p);
- $("chatLog").scrollTop=$("chatLog").scrollHeight;
-}
-
-function speak(text){
- if(!window.speechSynthesis)return;
+function say(text){
+ if(!("speechSynthesis" in window))return;
  speechSynthesis.cancel();
  const u=new SpeechSynthesisUtterance(text);
- u.lang="tr-TR";
- u.rate=1;
- u.pitch=.9;
- const v=speechSynthesis.getVoices();
- u.voice=v.find(x=>x.lang.toLowerCase().startsWith("tr"))||null;
+ u.lang="tr-TR";u.rate=1;u.pitch=.92;
  speechSynthesis.speak(u);
 }
-
-function clock(){
- $("clock").textContent=new Date().toLocaleString("tr-TR");
+function log(who,text){
+ const el=$("log"),line=document.createElement("div");
+ line.textContent=who+": "+text;el.appendChild(line);el.scrollTop=el.scrollHeight;
 }
-setInterval(clock,1000);
-clock();
+function toast(t){$("toast").textContent=t;setTimeout(()=>$("toast").textContent="",2500)}
+function status(t){$("status").innerHTML=t}
 
-async function startMicrophone(){
- if(micStream)return true;
+async function requestPermissions(){
  try{
-  micStream=await navigator.mediaDevices.getUserMedia({
-   audio:{
-    echoCancellation:true,
-    noiseSuppression:true,
-    autoGainControl:true
-   }
+  const stream=await navigator.mediaDevices.getUserMedia({
+   audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:false},
+   video:{facingMode:"user",width:{ideal:640},height:{ideal:480}}
   });
-  audioContext=new(window.AudioContext||window.webkitAudioContext)();
-  const source=audioContext.createMediaStreamSource(micStream);
-  analyser=audioContext.createAnalyser();
-  analyser.fftSize=2048;
-  source.connect(analyser);
-  $("micStatus").textContent="MIC: ACTIVE";
-  listenAudio();
-  return true;
+  micStream=new MediaStream(stream.getAudioTracks());
+  cameraStream=new MediaStream(stream.getVideoTracks());
+  $("camera").srcObject=cameraStream;
+  permissionGranted=true;
+  localStorage.setItem("jarvis_permission_hint","yes");
+  $("permission").textContent="İzinler alındı. Artık iki kez alkışlayarak JARVIS'i açabilirsin.";
+  setupAudio();
+  toast("Mikrofon ve kamera hazır.");
  }catch(e){
-  $("micStatus").textContent="MIC: PERMISSION DENIED";
-  log("SYSTEM","Mikrofon izni gerekli.");
-  return false;
+  $("permission").textContent="İzin alınamadı. Safari ayarlarından bu site için Kamera ve Mikrofon izinlerini açıp sayfayı yenile.";
+  console.error(e);
  }
 }
+function setupAudio(){
+ if(!micStream)return;
+ audioContext=new (window.AudioContext||window.webkitAudioContext)();
+ source=audioContext.createMediaStreamSource(micStream);
+ analyser=audioContext.createAnalyser();analyser.fftSize=1024;
+ source.connect(analyser);
+ if(audioContext.state==="suspended")audioContext.resume();
+ listenLoop();
+}
+$("standby").addEventListener("click",async()=>{
+ if(!permissionGranted)await requestPermissions();
+ else if(audioContext?.state==="suspended")await audioContext.resume();
+},{once:false});
 
-function listenAudio(){
+function listenLoop(){
  const data=new Uint8Array(analyser.fftSize);
-
- function loop(){
-  if(!micStream)return;
-
+ function tick(){
+  if(!analyser)return;
   analyser.getByteTimeDomainData(data);
   let sum=0,peak=0;
-
-  for(const v of data){
-   const n=(v-128)/128;
-   sum+=n*n;
-   peak=Math.max(peak,Math.abs(n));
+  for(let i=0;i<data.length;i++){
+   const v=(data[i]-128)/128;sum+=v*v;peak=Math.max(peak,Math.abs(v));
   }
+  const rms=Math.sqrt(sum/data.length),now=Date.now();
 
-  const rms=Math.sqrt(sum/data.length);
-  const now=Date.now();
-
-  // İki alkış algılama
-  if(rms>.23&&peak>.48){
-   claps.push(now);
-   claps=claps.filter(t=>now-t<900);
-   if(claps.length>=2){
-    claps=[];
-    toggleSystem();
+  // Alkış algılama: kısa ve yüksek ses tepeleri
+  if(peak>.72 && rms>.10 && now-(window.lastClap||0)>230 && !recording){
+   window.lastClap=now;
+   clapTimes.push(now);clapTimes=clapTimes.filter(t=>now-t<1000);
+   if(clapTimes.length>=2){
+    clapTimes=[];toggleSystem();
    }
   }
 
-  // Sistem açıkken ses kaydı
-  if(active&&voiceEnabled&&!processing&&rms>.035){
-   lastSound=now;
-   if(!recording)beginRecording();
+  // Sistem açıkken konuşma algılama
+  if(active && !voiceBusy && !recording && rms>.035){
+   if(!speechStart)speechStart=now;
+   lastLoud=now;
+   if(now-speechStart>180)beginRecording();
   }
-
-  if(recording&&now-lastSound>1000)stopRecording();
-
-  requestAnimationFrame(loop);
+  if(recording){
+   if(rms>.025)lastLoud=now;
+   if(now-lastLoud>950)finishRecording();
+  }
+  if(rms<.018)speechStart=0;
+  requestAnimationFrame(tick);
  }
- loop();
+ tick();
 }
 
 function beginRecording(){
- if(!micStream||recording||!window.MediaRecorder)return;
+ if(!micStream||recording||voiceBusy)return;
  try{
-  chunks=[];
-  const type=MediaRecorder.isTypeSupported("audio/mp4")?"audio/mp4":"";
-  recorder=new MediaRecorder(micStream,type?{mimeType:type}:undefined);
-  recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
+  const mime=["audio/mp4","audio/webm;codecs=opus","audio/webm"].find(x=>MediaRecorder.isTypeSupported(x));
+  recorder=new MediaRecorder(micStream,mime?{mimeType:mime}:{});
+  recordChunks=[];recording=true;voiceBusy=true;
+  speechStart=0;lastLoud=Date.now();
+  recorder.ondataavailable=e=>{if(e.data.size)recordChunks.push(e.data)};
   recorder.onstop=async()=>{
-   const blob=new Blob(chunks,{type:recorder.mimeType||"audio/mp4"});
-   if(blob.size>2000)await transcribe(blob);
+   const blob=new Blob(recordChunks,{type:recorder.mimeType||"audio/mp4"});
+   recording=false;
+   if(blob.size>5000 && blob.size<8*1024*1024)await sendAudio(blob);
+   else voiceBusy=false;
   };
   recorder.start();
-  recording=true;
-  $("bottom").textContent="LISTENING // SPEAK NOW";
- }catch(e){recording=false;}
+ }catch(e){recording=false;voiceBusy=false;console.error(e)}
 }
-
-function stopRecording(){
- if(!recording)return;
- recording=false;
- try{recorder.stop()}catch(e){}
+function finishRecording(){
+ if(!recording||!recorder)return;
+ try{recorder.stop()}catch(e){recording=false;voiceBusy=false}
 }
-
-async function transcribe(blob){
- processing=true;
+async function sendAudio(blob){
  try{
-  const fd=new FormData();
-  fd.append("audio",blob,"voice.m4a");
-  const r=await fetch("/api?action=transcribe",{method:"POST",body:fd});
-  const j=await r.json();
-  if(!r.ok)throw Error(j.error||"Ses tanınamadı.");
-  const text=(j.text||"").trim();
-  if(text){
-   log("YOU",text);
-   await command(text);
-  }
- }catch(e){
-  log("ERROR",e.message);
- }finally{
-  processing=false;
-  $("bottom").textContent="J.A.R.V.I.S. ONLINE";
- }
+  toast("Sesiniz çözümleniyor...");
+  const base64=await new Promise((resolve,reject)=>{
+   const r=new FileReader();r.onload=()=>resolve(String(r.result).split(",")[1]);r.onerror=reject;r.readAsDataURL(blob);
+  });
+  const res=await fetch("/api?action=transcribe",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({audio:base64,mimeType:blob.type})});
+  const data=await res.json();
+  if(!res.ok)throw new Error(data.error||"Ses çözümlenemedi");
+  const text=(data.text||"").trim();
+  if(text){log("SİZ",text);await command(text)}
+ }catch(e){log("SİSTEM","Ses algılama hatası: "+e.message)}
+ finally{voiceBusy=false}
 }
 
 async function toggleSystem(){
- if(active)shutdown();
- else await boot();
+ if(!permissionGranted){toast("Önce bir kez ekrana dokunup izinleri ver.");return}
+ if(active)shutdown();else await boot();
 }
-
 async function boot(){
- if(active)return;
- const ok=await startMicrophone();
- if(!ok)return;
-
  active=true;
- startCamera();
-
- $("standby").style.display="none";
- $("boot").classList.add("show");
-
- const lines=[
-  "NEURAL NETWORK INITIALIZING...",
-  "AUDIO CHANNEL CONNECTED...",
-  "VISUAL SENSORS CONNECTED...",
-  "HOLOGRAPHIC CORE ONLINE...",
-  "PERSONAL ASSISTANT READY..."
- ];
-
- let i=0;
- $("bootText").textContent="";
-
- const timer=setInterval(()=>{
-  $("bootText").textContent+=lines[i]+"\n";
-  i++;
-  if(i>=lines.length){
-   clearInterval(timer);
-   setTimeout(()=>{
-    $("bootLogo").querySelector("h1").classList.add("move");
-    setTimeout(()=>{
-     $("boot").classList.remove("show");
-     $("app").classList.add("active");
-     $("bottom").textContent="J.A.R.V.I.S. ONLINE // LISTENING";
-     speak("İyi akşamlar. JARVIS çevrimiçi. Komutlarınızı bekliyorum.");
-     getWeather();
-    },1500);
-   },500);
-  }
- },650);
+ $("standby").style.display="none";$("app").style.display="block";
+ if(audioContext?.state==="suspended")await audioContext.resume();
+ const steps=["GÜÇ HATTI AKTİF","HOLOGRAFİK ARAYÜZ YÜKLENİYOR","SES SİSTEMİ ÇEVRİMİÇİ","J.A.R.V.I.S. AKTİF"];
+ for(const s of steps){$("bootText").textContent=s;await new Promise(r=>setTimeout(r,650))}
+ $("bootText").textContent="HOŞ GELDİNİZ. SİSTEMİNİZ HAZIR.";
+ status("ANA SİSTEM: AKTİF<br>SES: DİNLİYOR<br>BAĞLANTI: GÜVENLİ");
+ log("JARVIS","İyi akşamlar. Sizi dinliyorum.");
+ say("İyi akşamlar. JARVIS çevrimiçi. Sizi dinliyorum.");
+ getWeather();
 }
-
 function shutdown(){
- active=false;
- $("app").classList.remove("active");
- $("boot").classList.remove("show");
- $("standby").style.display="grid";
- $("bottom").textContent="TWO CLAPS // ACTIVATE SYSTEM";
- $("ultron").classList.remove("show");
+ active=false;ultron=false;
+ $("app").style.display="none";$("standby").style.display="flex";
+ $("ultron").style.display="none";$("core").style.display="grid";
+ if(recorder&&recording){try{recorder.stop()}catch(e){}}
+ voiceBusy=false;recording=false;
  speechSynthesis.cancel();
 }
-
-async function startCamera(){
- if(cameraStream)return;
- try{
-  cameraStream=await navigator.mediaDevices.getUserMedia({
-   video:{facingMode:"user",width:640,height:480},
-   audio:false
-  });
-  $("camera").srcObject=cameraStream;
-  $("camStatus").textContent="CAM: ACTIVE";
-  setupHands();
- }catch(e){
-  $("camStatus").textContent="CAM: PERMISSION DENIED";
+async function command(text){
+ const t=text.toLocaleLowerCase("tr-TR").trim();
+ if(t.includes("jarvis'e geri dön")||t.includes("jarvise geri dön")||t.includes("jarvis geri dön")){
+  ultron=false;$("ultron").style.display="none";$("core").style.display="grid";
+  const a="JARVIS kontrolü tekrar devraldı.";log("JARVIS",a);say(a);return;
  }
+ if(t.includes("ultron")||t.includes("esneme animasyonunu başlat")){
+  ultron=true;$("core").style.display="none";$("ultron").style.display="block";
+  const a="Ultron hologramı etkinleştirildi.";log("JARVIS",a);say(a);return;
+ }
+ if(t.includes("sistemi kapat")||t.includes("bekleme moduna geç")){
+  say("Sistem bekleme moduna geçiyor.");setTimeout(shutdown,900);return;
+ }
+ if(t.includes("hava durumu")){getWeather();return}
+ await askAI(text);
 }
-
-function setupHands(){
- if(!window.Hands||cameraRunner)return;
-
- hands=new Hands({
-  locateFile:f=>"https://cdn.jsdelivr.net/npm/@mediapipe/hands/"+f
- });
-
- hands.setOptions({
-  maxNumHands:2,
-  modelComplexity:1,
-  minDetectionConfidence:.65,
-  minTrackingConfidence:.6
- });
-
- hands.onResults(results=>{
-  if(!active)return;
-  const hand=results.multiHandLandmarks?.[0];
-
-  if(!hand){
-   $("handStatus").textContent="HAND: SEARCHING";
-   return;
-  }
-
-  $("handStatus").textContent="HAND: DETECTED";
-
-  const x=1-hand[8].x;
-  const y=hand[8].y;
-
-  $("core").style.filter=
-   `hue-rotate(${(x-.5)*80}deg)`;
-
-  const pinch=Math.hypot(
-   hand[4].x-hand[8].x,
-   hand[4].y-hand[8].y
-  )<.055;
-
-  if(pinch){
-   const el=document.elementFromPoint(
-    x*innerWidth,y*innerHeight
-   )?.closest(".panel");
-
-   if(el){
-    el.style.left=(x*innerWidth-80)+"px";
-    el.style.top=(y*innerHeight-30)+"px";
-    el.style.right="auto";
-    el.style.bottom="auto";
-   }
-  }
-
-  const fist=hand[8].y>hand[6].y&&
-   hand[12].y>hand[10].y&&
-   hand[16].y>hand[14].y&&
-   hand[20].y>hand[18].y;
-
-  if(fist&&!window.gestureLock){
-   window.gestureLock=true;
-   toggleUltron(true);
-   setTimeout(()=>window.gestureLock=false,2000);
-  }
- });
-
- cameraRunner=new Camera($("camera"),{
-  onFrame:async()=>{
-   if(active&&cameraStream)await hands.send({image:$("camera")});
-  },
-  width:640,
-  height:480
- });
- cameraRunner.start();
+async function askAI(text){
+ log("JARVIS","Düşünüyorum...");
+ try{
+  const res=await fetch("/api",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:text,sessionId})});
+  const data=await res.json();
+  if(!res.ok)throw new Error(data.error||"Sunucu yanıt vermedi");
+  const answer=data.answer||"Bu konuda yanıt oluşturamadım.";
+  log("JARVIS",answer);say(answer);
+ }catch(e){log("SİSTEM","Bağlantı hatası: "+e.message)}
 }
-
-function toggleUltron(show){
- $("ultron").classList.toggle("show",show);
- $("coreText").innerHTML=show?"ULTRON HOLOGRAM":"J.A.R.V.I.S.<br>ONLINE";
- speak(show?"Ultron hologramı etkinleştirildi.":"JARVIS sistemine geri dönüldü.");
-}
+$("send").onclick=async()=>{
+ const text=$("message").value.trim();if(!text)return;
+ $("message").value="";log("SİZ",text);await command(text);
+};
+$("message").addEventListener("keydown",e=>{if(e.key==="Enter")$("send").click()});
 
 async function getWeather(){
- if(!navigator.geolocation)return;
+ $("weather").textContent="Konum alınıyor...";
+ if(!navigator.geolocation){$("weather").textContent="Konum özelliği desteklenmiyor.";return}
  navigator.geolocation.getCurrentPosition(async pos=>{
   try{
    const {latitude,longitude}=pos.coords;
-   const url=`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=auto`;
-   const r=await fetch(url);
-   const j=await r.json();
-   const c=j.current;
-   $("weatherText").textContent=
-    `${Math.round(c.temperature_2m)}°C · Hissedilen ${Math.round(c.apparent_temperature)}°C`;
-   $("weatherMore").textContent=
-    `Nem %${c.relative_humidity_2m} · Rüzgâr ${c.wind_speed_10m} km/sa · Günlük ${Math.round(j.daily.temperature_2m_min[0])}°/${Math.round(j.daily.temperature_2m_max[0])}°`;
-  }catch(e){
-   $("weatherText").textContent="Hava durumu alınamadı.";
-  }
- },()=>{$("weatherText").textContent="Konum izni verilmedi.";});
+   const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,wind_speed_10m&timezone=auto`);
+   const d=await r.json(),c=d.current;
+   $("weather").innerHTML=`Sıcaklık: ${c.temperature_2m}°C<br>Nem: %${c.relative_humidity_2m}<br>Rüzgâr: ${c.wind_speed_10m} km/sa`;
+  }catch(e){$("weather").textContent="Hava durumu alınamadı."}
+ },()=>{$("weather").textContent="Konum izni verilmedi."},{timeout:10000});
 }
+setInterval(()=>{$("clock").textContent=new Date().toLocaleTimeString("tr-TR")},1000);
 
-async function askAI(text){
- history.push({role:"user",content:text});
- history=history.slice(-16);
-
- const r=await fetch("/api",{
-  method:"POST",
-  headers:{"Content-Type":"application/json"},
-  body:JSON.stringify({action:"chat",clientId,messages:history})
+// Kamera hareketi: MediaPipe Hands yüklenirse el takibi açılır.
+const handScript=document.createElement("script");
+handScript.src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js";
+handScript.onload=()=>{
+ if(!window.Hands)return;
+ const hands=new Hands({locateFile:file=>`https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`});
+ hands.setOptions({maxNumHands:1,modelComplexity:0,minDetectionConfidence:.65,minTrackingConfidence:.6});
+ hands.onResults(results=>{
+  if(!active||!results.multiHandLandmarks?.length)return;
+  const p=results.multiHandLandmarks[0];
+  const wrist=p[0],thumb=p[4],index=p[8],middle=p[12],ring=p[16],pink=p[20];
+  const pinch=Math.hypot(thumb.x-index.x,thumb.y-index.y);
+  const folded=[8,12,16,20].filter(i=>p[i].y>p[i-2].y).length;
+  if(folded===4 && !window.fistAt){window.fistAt=Date.now()}
+  if(folded<3)window.fistAt=0;
+  if(window.fistAt && Date.now()-window.fistAt>1800){
+   ultron=!ultron;$("ultron").style.display=ultron?"block":"none";$("core").style.display=ultron?"none":"grid";window.fistAt=0;
+  }
+  if(pinch<.045){
+   $("core").style.transform=`translate(calc(-50% + ${(index.x-.5)*180}px),calc(-50% + ${(index.y-.5)*120}px))`;
+  }
  });
-
- const j=await r.json();
- if(!r.ok)throw Error(j.error||"AI bağlantı hatası.");
-
- const reply=j.reply||"Yanıt oluşturulamadı.";
- history.push({role:"assistant",content:reply});
- localStorage.setItem("jarvis-history",JSON.stringify(history));
- return reply;
-}
-
-async function command(raw){
- const t=raw.toLocaleLowerCase("tr-TR");
-
- if(t.includes("sistemi kapat")||t.includes("jarvis kapan")){
-  speak("Sistem bekleme moduna alınıyor.");
-  setTimeout(shutdown,1000);
-  return;
- }
-
- if(t.includes("ultron")&&(t.includes("çağır")||t.includes("göster"))){
-  toggleUltron(true);return;
- }
-
- if(t.includes("jarvis")&&t.includes("geri dön")){
-  toggleUltron(false);return;
- }
-
- if(t.includes("esneme")){
-  $("core").animate([
-   {transform:"translate(-50%,-50%) scale(1)"},
-   {transform:"translate(-50%,-50%) scale(1.3,.8)"},
-   {transform:"translate(-50%,-50%) scale(1)"}
-  ],{duration:1800});
-  speak("Esneme animasyonu başlatıldı.");
-  return;
- }
-
- if(t.includes("hava durumu")){
-  getWeather();
-  speak("Hava durumu yenileniyor.");
-  return;
- }
-
- if(t.includes("not al")){
-  const note=raw.replace(/not al/i,"").trim();
-  const notes=JSON.parse(localStorage.getItem("jarvis-notes")||"[]");
-  notes.push(note);
-  localStorage.setItem("jarvis-notes",JSON.stringify(notes));
-  $("noteText").textContent="Son not: "+note;
-  speak("Not kaydedildi.");
-  return;
- }
-
- if(t.includes("notları göster")){
-  const notes=JSON.parse(localStorage.getItem("jarvis-notes")||"[]");
-  const text=notes.slice(-5).join(". ")||"Not bulunmuyor.";
-  log("JARVIS",text);
-  speak(text);
-  return;
- }
-
- if(t.includes("kamerayı kapat")){
-  cameraStream?.getTracks().forEach(t=>t.stop());
-  cameraStream=null;
-  $("camStatus").textContent="CAM: OFF";
-  speak("Kamera kapatıldı.");
-  return;
- }
-
- if(t.includes("mikrofonu kapat")){
-  voiceEnabled=false;
-  speak("Sesli komut tanıma kapatıldı. Alkış algılama açık.");
-  return;
- }
-
- if(t.includes("mikrofonu aç")||t.includes("sesi aç")){
-  voiceEnabled=true;
-  speak("Sesli komutlar açık.");
-  return;
- }
-
- try{
-  $("bottom").textContent="JARVIS // PROCESSING";
-  const reply=await askAI(raw);
-  log("JARVIS",reply);
-  speak(reply);
- }catch(e){
-  log("SYSTEM",e.message);
-  speak("Bağlantı hatası. "+e.message);
- }
-}
-
-$("chatInput").addEventListener("keydown",e=>{
- if(e.key==="Enter"){
-  const v=e.target.value.trim();
-  if(v){
-   e.target.value="";
-   log("YOU",v);
-   command(v);
-  }
- }
-});
-
-// İlk ziyaret: izinleri iste. iPad Safari izin için kullanıcı dokunuşu isteyebilir.
-window.addEventListener("load",()=>{
- startMicrophone();
-});
-$("standby").addEventListener("click",()=>{
- startMicrophone();
-});
-})();
+ const cam=new Camera($("camera"),{onFrame:async()=>{await hands.send({image:$("camera")})},width:320,height:240});
+ if(cameraStream)cam.start();
+};
+document.head.appendChild(handScript);
 </script>
 </body>
 </html>
