@@ -3,21 +3,22 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#020812">
 <title>J.A.R.V.I.S.</title>
+
 <style>
 *{box-sizing:border-box}
-:root{--blue:#00c8ff;--cyan:#75edff;--dark:#020812}
-body{margin:0;background:#020812;color:#c9f8ff;font-family:Arial,sans-serif;overflow:hidden}
-#standby{position:fixed;inset:0;background:radial-gradient(circle,#071b2a,#02050b 65%);z-index:20;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center}
-#standby h1{font-size:clamp(35px,8vw,75px);letter-spacing:12px;color:#69eaff;text-shadow:0 0 25px #00bfff;margin:0}
-#standby p{color:#7aaab9;letter-spacing:3px;font-size:12px;margin-top:22px}
-#permission{position:absolute;bottom:35px;border:1px solid #087eaa;background:#061a28;color:#a8f5ff;padding:13px 18px;border-radius:8px;font-size:12px;max-width:85%;line-height:1.5}
-#app{display:none;position:fixed;inset:0;background:radial-gradient(ellipse at center,#092238 0%,#030b15 48%,#010409 100%)}
-#grid{position:absolute;inset:0;opacity:.16;background-image:linear-gradient(#00aaff22 1px,transparent 1px),linear-gradient(90deg,#00aaff22 1px,transparent 1px);background-size:38px 38px}
-#top{position:absolute;top:18px;left:20px;right:20px;display:flex;justify-content:space-between;font-size:11px;letter-spacing:2px;color:#69dfff}
-#core{position:absolute;left:50%;top:48%;width:min(55vw,330px);height:min(55vw,330px);transform:translate(-50%,-50%);display:grid;place-items:center}
+body{margin:0;background:#020812;color:#b9f5ff;font-family:Arial,sans-serif;overflow:hidden}
+#standby{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle,#09243a,#02050b 70%);text-align:center}
+#standby h1{font-size:clamp(38px,9vw,78px);letter-spacing:10px;color:#75eaff;text-shadow:0 0 25px #00bfff;margin:0}
+#standby p{font-size:11px;letter-spacing:4px;color:#7db7c9}
+#permission{position:absolute;bottom:30px;width:88%;max-width:420px;padding:13px;border:1px solid #087eaa;border-radius:8px;background:#061a28;color:#a8edff;font-size:12px;line-height:1.6}
+#app{display:none;position:fixed;inset:0;background:radial-gradient(ellipse at center,#092238,#030b15 55%,#010409)}
+#grid{position:absolute;inset:0;opacity:.17;background-image:linear-gradient(#00aaff22 1px,transparent 1px),linear-gradient(90deg,#00aaff22 1px,transparent 1px);background-size:38px 38px}
+#top{position:absolute;top:17px;left:17px;right:17px;display:flex;justify-content:space-between;color:#69dfff;font-size:10px;letter-spacing:2px}
+#bootText{position:absolute;top:12%;left:50%;transform:translateX(-50%);font-size:12px;letter-spacing:3px;text-align:center;width:90%;color:#a8f7ff}
+#core{position:absolute;left:50%;top:46%;width:min(57vw,330px);height:min(57vw,330px);transform:translate(-50%,-50%);display:grid;place-items:center;transition:transform .15s}
 .ring{position:absolute;border:1px solid #00bfff88;border-radius:50%;box-shadow:0 0 18px #00bfff44,inset 0 0 18px #00bfff22}
 .r1{width:100%;height:100%;border-top:3px solid #8af5ff;animation:spin 9s linear infinite}
 .r2{width:82%;height:82%;border-left:3px solid #00aaff;animation:spin 6s linear infinite reverse}
@@ -26,282 +27,645 @@ body{margin:0;background:#020812;color:#c9f8ff;font-family:Arial,sans-serif;over
 #reactor{width:24%;height:24%;border-radius:50%;background:radial-gradient(circle,#fff,#70eaff 20%,#0088cc 48%,#001b35 75%);box-shadow:0 0 35px #00bfff,0 0 80px #0088ff;animation:pulse 2s infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes pulse{50%{transform:scale(.83);filter:brightness(1.7)}}
-.panel{position:absolute;border:1px solid #00bfff66;background:#041a2a99;box-shadow:0 0 18px #0077aa22;padding:13px;border-radius:8px;backdrop-filter:blur(7px);font-size:12px}
-.panel h3{font-size:11px;letter-spacing:2px;color:#55dfff;margin:0 0 9px}
-#leftPanel{left:18px;top:22%;width:190px}
-#rightPanel{right:18px;top:22%;width:190px}
-#bottomPanel{left:50%;bottom:22px;transform:translateX(-50%);width:min(90%,540px);text-align:center}
-#status{color:#6eeaff;line-height:1.6}
-#log{height:95px;overflow:auto;text-align:left;color:#9edce8;line-height:1.5}
-#chat{display:flex;gap:6px;margin-top:9px}
-#chat input{min-width:0;flex:1;background:#03101b;border:1px solid #087eaa;color:white;padding:10px;border-radius:5px;outline:none}
-#chat button{background:#075273;color:white;border:1px solid #00bfff;padding:8px 13px;border-radius:5px}
-#camera{position:absolute;right:18px;bottom:150px;width:115px;border:1px solid #00bfff88;border-radius:8px;opacity:.65;transform:scaleX(-1)}
-#bootText{position:absolute;left:50%;top:12%;transform:translateX(-50%);font-size:12px;letter-spacing:3px;color:#a8f7ff;text-align:center;width:90%}
-#ultron{display:none;position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);font-size:clamp(65px,18vw,140px);color:#6beaff;text-shadow:0 0 20px #00bfff,0 0 55px #0088ff;filter:drop-shadow(0 0 20px #00bfff);animation:ultronIn 1.5s ease}
-@keyframes ultronIn{from{opacity:0;transform:translate(-50%,-50%) scale(.1) rotate(-90deg)}to{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(0)}}
-#ultron small{display:block;font-size:12px;letter-spacing:5px;text-align:center}
-#toast{position:absolute;top:75px;left:50%;transform:translateX(-50%);color:#aaf5ff;font-size:12px;text-align:center}
+.panel{position:absolute;border:1px solid #00bfff66;background:#041a2acc;box-shadow:0 0 18px #0077aa22;padding:12px;border-radius:8px;backdrop-filter:blur(7px);font-size:12px}
+.panel h3{font-size:10px;letter-spacing:2px;color:#55dfff;margin:0 0 9px}
+#leftPanel{left:16px;top:22%;width:180px}
+#rightPanel{right:16px;top:22%;width:180px}
+#bottomPanel{left:50%;bottom:15px;transform:translateX(-50%);width:min(92%,540px);text-align:center}
+#status,#weather{line-height:1.7}
+#log{height:90px;overflow:auto;text-align:left;color:#9edce8;line-height:1.5;overflow-wrap:anywhere}
+#chat{display:flex;gap:6px;margin-top:8px}
+#message{min-width:0;flex:1;background:#03101b;border:1px solid #087eaa;color:white;padding:10px;border-radius:5px}
+#send{background:#075273;color:white;border:1px solid #00bfff;padding:8px 12px;border-radius:5px}
+#camera{position:absolute;right:16px;bottom:155px;width:110px;border:1px solid #00bfff88;border-radius:8px;opacity:.6;transform:scaleX(-1)}
+#ultron{display:none;position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);font-size:clamp(70px,19vw,145px);color:#6beaff;text-shadow:0 0 20px #00bfff,0 0 55px #0088ff;text-align:center;animation:appear 1.4s ease}
+#ultron small{display:block;font-size:12px;letter-spacing:5px}
+@keyframes appear{from{opacity:0;transform:translate(-50%,-50%) scale(.1) rotate(-90deg)}to{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(0)}}
+#toast{position:absolute;top:65px;left:50%;transform:translateX(-50%);font-size:12px;text-align:center;width:90%;color:#aaf5ff}
 @media(max-width:650px){
- #leftPanel{left:8px;top:15%;width:145px}
- #rightPanel{right:8px;top:15%;width:145px}
- #bottomPanel{bottom:12px}
- #camera{bottom:165px;width:90px;right:8px}
- .panel{font-size:10px;padding:9px}
+ #leftPanel{left:6px;top:15%;width:135px}
+ #rightPanel{right:6px;top:15%;width:135px}
+ #bottomPanel{bottom:8px}
+ #camera{right:6px;bottom:160px;width:85px}
+ .panel{font-size:10px;padding:8px}
 }
 </style>
 </head>
+
 <body>
 
 <div id="standby">
  <h1>J.A.R.V.I.S.</h1>
  <p>SİSTEM BEKLEME MODUNDA</p>
- <div id="permission">İlk kullanım: Mikrofon ve kamera izni için ekrana bir kez dokun. İzin verildikten sonra sistemi iki alkışla kontrol edebilirsin.</div>
+ <div id="permission">İlk kullanımda mikrofon ve kamera izni için ekrana bir kez dokun. İzinler verildikten sonra iki alkışla sistemi açabilirsin.</div>
 </div>
 
 <div id="app">
  <div id="grid"></div>
- <div id="top"><span>STARK INDUSTRIES // J.A.R.V.I.S.</span><span id="clock">--:--:--</span></div>
- <div id="bootText">SİSTEM BAŞLATILIYOR...</div>
- <div id="core">
-  <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div><div class="ring r4"></div><div id="reactor"></div>
+
+ <div id="top">
+  <span>STARK INDUSTRIES // J.A.R.V.I.S.</span>
+  <span id="clock">--:--:--</span>
  </div>
+
+ <div id="bootText">SİSTEM BEKLEMEDE</div>
+
+ <div id="core">
+  <div class="ring r1"></div>
+  <div class="ring r2"></div>
+  <div class="ring r3"></div>
+  <div class="ring r4"></div>
+  <div id="reactor"></div>
+ </div>
+
  <div id="ultron">◈<small>ULTRON PROTOKOLÜ</small></div>
- <div class="panel" id="leftPanel"><h3>SİSTEM DURUMU</h3><div id="status">Bağlantı kuruluyor...</div></div>
- <div class="panel" id="rightPanel"><h3>ÇEVRE BİLGİSİ</h3><div id="weather">Konum bekleniyor...</div></div>
+
+ <div class="panel" id="leftPanel">
+  <h3>SİSTEM DURUMU</h3>
+  <div id="status">Bağlantı bekleniyor...</div>
+ </div>
+
+ <div class="panel" id="rightPanel">
+  <h3>ÇEVRE BİLGİSİ</h3>
+  <div id="weather">Konum bekleniyor...</div>
+ </div>
+
  <div class="panel" id="bottomPanel">
   <h3>J.A.R.V.I.S. İLETİŞİM</h3>
-  <div id="log">Sistem hazır olduğunda sizinle konuşmaya başlayacağım.</div>
-  <div id="chat"><input id="message" placeholder="JARVIS'e mesaj yaz..."><button id="send">GÖNDER</button></div>
+  <div id="log">Sistem hazır olduğunda sizinle konuşacağım.</div>
+  <div id="chat">
+   <input id="message" placeholder="JARVIS'e mesaj yaz...">
+   <button id="send">GÖNDER</button>
+  </div>
  </div>
+
  <video id="camera" autoplay muted playsinline></video>
  <div id="toast"></div>
 </div>
 
 <script>
-const $=id=>document.getElementById(id);
-let active=false,ultron=false,micStream=null,cameraStream=null;
-let audioContext=null,analyser=null,source=null;
-let clapTimes=[],recording=false,recorder=null,recordChunks=[];
-let speechStart=0,lastLoud=0,voiceBusy=false,sessionId=localStorage.getItem("jarvis_session");
-if(!sessionId){sessionId=crypto.randomUUID();localStorage.setItem("jarvis_session",sessionId)}
-let permissionGranted=false;
+"use strict";
+
+const $ = id => document.getElementById(id);
+
+let active = false;
+let ultron = false;
+let micStream = null;
+let cameraStream = null;
+let audioContext = null;
+let analyser = null;
+let audioData = null;
+let recorder = null;
+let recording = false;
+let voiceBusy = false;
+let speechStart = 0;
+let lastLoud = 0;
+let clapTimes = [];
+let lastClap = 0;
+let permissionBusy = false;
+let handModel = null;
+let handFrameBusy = false;
+let fistSince = 0;
+let lastFistToggle = 0;
+
+let sessionId = localStorage.getItem("jarvis_session");
+if(!sessionId){
+ sessionId = crypto.randomUUID ? crypto.randomUUID() : "session-"+Date.now();
+ localStorage.setItem("jarvis_session",sessionId);
+}
+
+function toast(text){
+ $("toast").textContent = text;
+ setTimeout(()=>$("toast").textContent="",3000);
+}
+
+function log(who,text){
+ const line=document.createElement("div");
+ line.textContent=who+": "+text;
+ $("log").appendChild(line);
+ $("log").scrollTop=$("log").scrollHeight;
+}
 
 function say(text){
  if(!("speechSynthesis" in window))return;
  speechSynthesis.cancel();
  const u=new SpeechSynthesisUtterance(text);
- u.lang="tr-TR";u.rate=1;u.pitch=.92;
+ u.lang="tr-TR";
+ u.rate=.95;
+ u.pitch=.92;
  speechSynthesis.speak(u);
 }
-function log(who,text){
- const el=$("log"),line=document.createElement("div");
- line.textContent=who+": "+text;el.appendChild(line);el.scrollTop=el.scrollHeight;
+
+function setStatus(text){
+ $("status").innerHTML=text;
 }
-function toast(t){$("toast").textContent=t;setTimeout(()=>$("toast").textContent="",2500)}
-function status(t){$("status").innerHTML=t}
 
 async function requestPermissions(){
+ if(permissionBusy)return;
+ permissionBusy=true;
+
  try{
+  if(!navigator.mediaDevices?.getUserMedia){
+   throw new Error("Mikrofon erişimi desteklenmiyor. Site HTTPS üzerinden açılmalı.");
+  }
+
   const stream=await navigator.mediaDevices.getUserMedia({
-   audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:false},
-   video:{facingMode:"user",width:{ideal:640},height:{ideal:480}}
+   audio:{
+    echoCancellation:true,
+    noiseSuppression:true,
+    autoGainControl:false
+   },
+   video:{
+    facingMode:"user",
+    width:{ideal:640},
+    height:{ideal:480}
+   }
   });
+
   micStream=new MediaStream(stream.getAudioTracks());
   cameraStream=new MediaStream(stream.getVideoTracks());
+
   $("camera").srcObject=cameraStream;
-  permissionGranted=true;
+  await $("camera").play().catch(()=>{});
+
   localStorage.setItem("jarvis_permission_hint","yes");
-  $("permission").textContent="İzinler alındı. Artık iki kez alkışlayarak JARVIS'i açabilirsin.";
+  $("permission").textContent="İzinler hazır. İki alkışla JARVIS'i açabilirsin.";
+
   setupAudio();
   toast("Mikrofon ve kamera hazır.");
- }catch(e){
-  $("permission").textContent="İzin alınamadı. Safari ayarlarından bu site için Kamera ve Mikrofon izinlerini açıp sayfayı yenile.";
-  console.error(e);
+
+ }catch(error){
+  console.error(error);
+  $("permission").textContent="İzin alınamadı: "+error.message+" Safari site ayarlarından mikrofon ve kamerayı aç.";
+ }finally{
+  permissionBusy=false;
  }
 }
+
 function setupAudio(){
  if(!micStream)return;
- audioContext=new (window.AudioContext||window.webkitAudioContext)();
- source=audioContext.createMediaStreamSource(micStream);
- analyser=audioContext.createAnalyser();analyser.fftSize=1024;
+
+ if(audioContext){
+  audioContext.close().catch(()=>{});
+ }
+
+ audioContext=new(window.AudioContext||window.webkitAudioContext)();
+ const source=audioContext.createMediaStreamSource(micStream);
+ analyser=audioContext.createAnalyser();
+ analyser.fftSize=1024;
  source.connect(analyser);
- if(audioContext.state==="suspended")audioContext.resume();
+ audioData=new Uint8Array(analyser.fftSize);
+
+ if(audioContext.state==="suspended"){
+  audioContext.resume().catch(()=>{});
+ }
+
  listenLoop();
 }
+
 $("standby").addEventListener("click",async()=>{
- if(!permissionGranted)await requestPermissions();
- else if(audioContext?.state==="suspended")await audioContext.resume();
-},{once:false});
+ if(!micStream || !cameraStream){
+  await requestPermissions();
+ }else if(audioContext?.state==="suspended"){
+  await audioContext.resume();
+ }
+});
+
+// Daha önce izin verilmişse yeniden bağlanmayı dene.
+if(localStorage.getItem("jarvis_permission_hint")==="yes"){
+ requestPermissions();
+}
 
 function listenLoop(){
- const data=new Uint8Array(analyser.fftSize);
- function tick(){
-  if(!analyser)return;
-  analyser.getByteTimeDomainData(data);
-  let sum=0,peak=0;
-  for(let i=0;i<data.length;i++){
-   const v=(data[i]-128)/128;sum+=v*v;peak=Math.max(peak,Math.abs(v));
-  }
-  const rms=Math.sqrt(sum/data.length),now=Date.now();
+ if(!analyser)return;
 
-  // Alkış algılama: kısa ve yüksek ses tepeleri
-  if(peak>.72 && rms>.10 && now-(window.lastClap||0)>230 && !recording){
-   window.lastClap=now;
-   clapTimes.push(now);clapTimes=clapTimes.filter(t=>now-t<1000);
+ function tick(){
+  if(!analyser || !audioData)return;
+
+  analyser.getByteTimeDomainData(audioData);
+
+  let sum=0;
+  let peak=0;
+
+  for(let i=0;i<audioData.length;i++){
+   const v=(audioData[i]-128)/128;
+   sum+=v*v;
+   peak=Math.max(peak,Math.abs(v));
+  }
+
+  const rms=Math.sqrt(sum/audioData.length);
+  const now=Date.now();
+
+  // İki alkış algılama
+  if(peak>.72 && rms>.10 && now-lastClap>250 && !recording){
+   lastClap=now;
+   clapTimes.push(now);
+   clapTimes=clapTimes.filter(t=>now-t<1100);
+
    if(clapTimes.length>=2){
-    clapTimes=[];toggleSystem();
+    clapTimes=[];
+    toggleSystem();
    }
   }
 
-  // Sistem açıkken konuşma algılama
+  // JARVIS açıkken konuşmayı algılama
   if(active && !voiceBusy && !recording && rms>.035){
    if(!speechStart)speechStart=now;
    lastLoud=now;
-   if(now-speechStart>180)beginRecording();
+
+   if(now-speechStart>150){
+    beginRecording();
+   }
   }
+
   if(recording){
    if(rms>.025)lastLoud=now;
-   if(now-lastLoud>950)finishRecording();
+
+   if(now-lastLoud>1000){
+    finishRecording();
+   }
+
+   if(recorder?.startedAt && now-recorder.startedAt>12000){
+    finishRecording();
+   }
   }
+
   if(rms<.018)speechStart=0;
+
   requestAnimationFrame(tick);
  }
- tick();
+
+ requestAnimationFrame(tick);
 }
 
 function beginRecording(){
- if(!micStream||recording||voiceBusy)return;
+ if(!micStream || recording || voiceBusy)return;
+
  try{
-  const mime=["audio/mp4","audio/webm;codecs=opus","audio/webm"].find(x=>MediaRecorder.isTypeSupported(x));
-  recorder=new MediaRecorder(micStream,mime?{mimeType:mime}:{});
-  recordChunks=[];recording=true;voiceBusy=true;
-  speechStart=0;lastLoud=Date.now();
-  recorder.ondataavailable=e=>{if(e.data.size)recordChunks.push(e.data)};
-  recorder.onstop=async()=>{
-   const blob=new Blob(recordChunks,{type:recorder.mimeType||"audio/mp4"});
-   recording=false;
-   if(blob.size>5000 && blob.size<8*1024*1024)await sendAudio(blob);
-   else voiceBusy=false;
+  const formats=["audio/mp4","audio/webm;codecs=opus","audio/webm"];
+  const mime=formats.find(x=>MediaRecorder.isTypeSupported(x));
+
+  const current=mime
+   ?new MediaRecorder(micStream,{mimeType:mime})
+   :new MediaRecorder(micStream);
+
+  recorder=current;
+  const chunks=[];
+
+  recording=true;
+  voiceBusy=true;
+  speechStart=0;
+  lastLoud=Date.now();
+  current.startedAt=Date.now();
+
+  current.ondataavailable=e=>{
+   if(e.data && e.data.size>0)chunks.push(e.data);
   };
-  recorder.start();
- }catch(e){recording=false;voiceBusy=false;console.error(e)}
+
+  current.onerror=e=>{
+   console.error(e);
+   recording=false;
+   voiceBusy=false;
+  };
+
+  current.onstop=async()=>{
+   recording=false;
+   const blob=new Blob(chunks,{type:current.mimeType||"audio/mp4"});
+
+   if(blob.size>3000 && blob.size<3*1024*1024){
+    await sendAudio(blob);
+   }else{
+    voiceBusy=false;
+   }
+  };
+
+  current.start();
+
+ }catch(error){
+  console.error(error);
+  recording=false;
+  voiceBusy=false;
+ }
 }
+
 function finishRecording(){
- if(!recording||!recorder)return;
- try{recorder.stop()}catch(e){recording=false;voiceBusy=false}
+ if(!recording || !recorder)return;
+
+ const current=recorder;
+ recorder=null;
+
+ try{
+  if(current.state!=="inactive")current.stop();
+ }catch(error){
+  recording=false;
+  voiceBusy=false;
+ }
 }
+
 async function sendAudio(blob){
  try{
   toast("Sesiniz çözümleniyor...");
+
   const base64=await new Promise((resolve,reject)=>{
-   const r=new FileReader();r.onload=()=>resolve(String(r.result).split(",")[1]);r.onerror=reject;r.readAsDataURL(blob);
+   const reader=new FileReader();
+   reader.onload=()=>resolve(String(reader.result).split(",")[1]);
+   reader.onerror=reject;
+   reader.readAsDataURL(blob);
   });
-  const res=await fetch("/api?action=transcribe",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({audio:base64,mimeType:blob.type})});
-  const data=await res.json();
-  if(!res.ok)throw new Error(data.error||"Ses çözümlenemedi");
+
+  const response=await fetch("/api?action=transcribe",{
+   method:"POST",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({
+    audio:base64,
+    mimeType:blob.type||"audio/mp4"
+   })
+  });
+
+  const data=await response.json();
+  if(!response.ok)throw new Error(data.error||"Ses çözümlenemedi.");
+
   const text=(data.text||"").trim();
-  if(text){log("SİZ",text);await command(text)}
- }catch(e){log("SİSTEM","Ses algılama hatası: "+e.message)}
- finally{voiceBusy=false}
+
+  if(text){
+   log("SİZ",text);
+   await command(text);
+  }
+
+ }catch(error){
+  log("SİSTEM","Ses hatası: "+error.message);
+ }finally{
+  voiceBusy=false;
+ }
 }
 
 async function toggleSystem(){
- if(!permissionGranted){toast("Önce bir kez ekrana dokunup izinleri ver.");return}
- if(active)shutdown();else await boot();
+ if(!micStream){
+  toast("Önce mikrofon iznini vermelisin.");
+  return;
+ }
+
+ if(active){
+  shutdown();
+ }else{
+  await boot();
+ }
 }
+
 async function boot(){
  active=true;
- $("standby").style.display="none";$("app").style.display="block";
- if(audioContext?.state==="suspended")await audioContext.resume();
- const steps=["GÜÇ HATTI AKTİF","HOLOGRAFİK ARAYÜZ YÜKLENİYOR","SES SİSTEMİ ÇEVRİMİÇİ","J.A.R.V.I.S. AKTİF"];
- for(const s of steps){$("bootText").textContent=s;await new Promise(r=>setTimeout(r,650))}
+ $("standby").style.display="none";
+ $("app").style.display="block";
+
+ if(audioContext?.state==="suspended"){
+  await audioContext.resume().catch(()=>{});
+ }
+
+ const steps=[
+  "GÜÇ HATTI AKTİF",
+  "HOLOGRAFİK ARAYÜZ YÜKLENİYOR",
+  "SES SİSTEMİ ÇEVRİMİÇİ",
+  "J.A.R.V.I.S. AKTİF"
+ ];
+
+ for(const step of steps){
+  if(!active)return;
+  $("bootText").textContent=step;
+  await new Promise(resolve=>setTimeout(resolve,650));
+ }
+
  $("bootText").textContent="HOŞ GELDİNİZ. SİSTEMİNİZ HAZIR.";
- status("ANA SİSTEM: AKTİF<br>SES: DİNLİYOR<br>BAĞLANTI: GÜVENLİ");
+
+ setStatus("ANA SİSTEM: AKTİF<br>SES: DİNLİYOR<br>BAĞLANTI: GÜVENLİ");
+
  log("JARVIS","İyi akşamlar. Sizi dinliyorum.");
  say("İyi akşamlar. JARVIS çevrimiçi. Sizi dinliyorum.");
+
  getWeather();
 }
+
 function shutdown(){
- active=false;ultron=false;
- $("app").style.display="none";$("standby").style.display="flex";
- $("ultron").style.display="none";$("core").style.display="grid";
- if(recorder&&recording){try{recorder.stop()}catch(e){}}
- voiceBusy=false;recording=false;
+ active=false;
+ ultron=false;
+
+ $("app").style.display="none";
+ $("standby").style.display="flex";
+ $("ultron").style.display="none";
+ $("core").style.display="grid";
+
+ if(recorder && recording){
+  try{recorder.stop()}catch(e){}
+ }
+
+ recording=false;
+ voiceBusy=false;
  speechSynthesis.cancel();
 }
+
 async function command(text){
  const t=text.toLocaleLowerCase("tr-TR").trim();
- if(t.includes("jarvis'e geri dön")||t.includes("jarvise geri dön")||t.includes("jarvis geri dön")){
-  ultron=false;$("ultron").style.display="none";$("core").style.display="grid";
-  const a="JARVIS kontrolü tekrar devraldı.";log("JARVIS",a);say(a);return;
+
+ if(t.includes("jarvis'e geri dön") || t.includes("jarvise geri dön") || t.includes("jarvis geri dön")){
+  setUltron(false);
+  const answer="JARVIS kontrolü tekrar devraldı.";
+  log("JARVIS",answer);
+  say(answer);
+  return;
  }
- if(t.includes("ultron")||t.includes("esneme animasyonunu başlat")){
-  ultron=true;$("core").style.display="none";$("ultron").style.display="block";
-  const a="Ultron hologramı etkinleştirildi.";log("JARVIS",a);say(a);return;
+
+ if(t.includes("ultron")){
+  setUltron(true);
+  const answer="Ultron protokolü etkinleştirildi.";
+  log("JARVIS",answer);
+  say(answer);
+  return;
  }
- if(t.includes("sistemi kapat")||t.includes("bekleme moduna geç")){
-  say("Sistem bekleme moduna geçiyor.");setTimeout(shutdown,900);return;
+
+ if(t.includes("esneme animasyonunu başlat")){
+  $("core").animate([
+   {transform:"translate(-50%,-50%) scale(1)"},
+   {transform:"translate(-50%,-50%) scale(1.25,.75)"},
+   {transform:"translate(-50%,-50%) scale(.8,1.2)"},
+   {transform:"translate(-50%,-50%) scale(1)"}
+  ],{duration:1500});
+  say("Holografik esneme animasyonu başlatıldı.");
+  return;
  }
- if(t.includes("hava durumu")){getWeather();return}
+
+ if(t.includes("sistemi kapat") || t.includes("bekleme moduna geç")){
+  say("Sistem bekleme moduna geçiyor.");
+  setTimeout(shutdown,1000);
+  return;
+ }
+
+ if(t.includes("hava durumu")){
+  getWeather();
+  return;
+ }
+
  await askAI(text);
 }
+
+function setUltron(value){
+ ultron=value;
+ $("ultron").style.display=value?"block":"none";
+ $("core").style.display=value?"none":"grid";
+}
+
 async function askAI(text){
  log("JARVIS","Düşünüyorum...");
+
  try{
-  const res=await fetch("/api",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:text,sessionId})});
-  const data=await res.json();
-  if(!res.ok)throw new Error(data.error||"Sunucu yanıt vermedi");
-  const answer=data.answer||"Bu konuda yanıt oluşturamadım.";
-  log("JARVIS",answer);say(answer);
- }catch(e){log("SİSTEM","Bağlantı hatası: "+e.message)}
+  const response=await fetch("/api",{
+   method:"POST",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({message:text,sessionId})
+  });
+
+  const data=await response.json();
+
+  if(!response.ok){
+   throw new Error(data.error||"Sunucu yanıt vermedi.");
+  }
+
+  const answer=data.answer||"Şu anda yanıt oluşturamadım.";
+  log("JARVIS",answer);
+  say(answer);
+
+ }catch(error){
+  log("SİSTEM","Bağlantı hatası: "+error.message);
+ }
 }
-$("send").onclick=async()=>{
- const text=$("message").value.trim();if(!text)return;
- $("message").value="";log("SİZ",text);await command(text);
-};
-$("message").addEventListener("keydown",e=>{if(e.key==="Enter")$("send").click()});
+
+$("send").addEventListener("click",async()=>{
+ const text=$("message").value.trim();
+ if(!text)return;
+
+ $("message").value="";
+ log("SİZ",text);
+ await command(text);
+});
+
+$("message").addEventListener("keydown",e=>{
+ if(e.key==="Enter")$("send").click();
+});
 
 async function getWeather(){
  $("weather").textContent="Konum alınıyor...";
- if(!navigator.geolocation){$("weather").textContent="Konum özelliği desteklenmiyor.";return}
+
+ if(!navigator.geolocation){
+  $("weather").textContent="Konum desteklenmiyor.";
+  return;
+ }
+
  navigator.geolocation.getCurrentPosition(async pos=>{
   try{
-   const {latitude,longitude}=pos.coords;
-   const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,wind_speed_10m&timezone=auto`);
-   const d=await r.json(),c=d.current;
-   $("weather").innerHTML=`Sıcaklık: ${c.temperature_2m}°C<br>Nem: %${c.relative_humidity_2m}<br>Rüzgâr: ${c.wind_speed_10m} km/sa`;
-  }catch(e){$("weather").textContent="Hava durumu alınamadı."}
- },()=>{$("weather").textContent="Konum izni verilmedi."},{timeout:10000});
-}
-setInterval(()=>{$("clock").textContent=new Date().toLocaleTimeString("tr-TR")},1000);
+   const lat=pos.coords.latitude;
+   const lon=pos.coords.longitude;
 
-// Kamera hareketi: MediaPipe Hands yüklenirse el takibi açılır.
+   const response=await fetch(
+    `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m&timezone=auto`
+   );
+
+   const data=await response.json();
+   const c=data.current;
+
+   $("weather").innerHTML=
+    `Sıcaklık: ${c.temperature_2m}°C<br>`+
+    `Nem: %${c.relative_humidity_2m}<br>`+
+    `Rüzgâr: ${c.wind_speed_10m} km/sa`;
+
+  }catch(error){
+   $("weather").textContent="Hava durumu alınamadı.";
+  }
+ },()=>{
+  $("weather").textContent="Konum izni verilmedi.";
+ },{timeout:10000});
+}
+
+setInterval(()=>{
+ $("clock").textContent=new Date().toLocaleTimeString("tr-TR");
+},1000);
+
+// MEDIAPIPE EL TAKİBİ
 const handScript=document.createElement("script");
 handScript.src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js";
+
 handScript.onload=()=>{
  if(!window.Hands)return;
- const hands=new Hands({locateFile:file=>`https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`});
- hands.setOptions({maxNumHands:1,modelComplexity:0,minDetectionConfidence:.65,minTrackingConfidence:.6});
- hands.onResults(results=>{
-  if(!active||!results.multiHandLandmarks?.length)return;
+
+ handModel=new Hands({
+  locateFile:file=>
+   `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+ });
+
+ handModel.setOptions({
+  maxNumHands:1,
+  modelComplexity:0,
+  minDetectionConfidence:.65,
+  minTrackingConfidence:.6
+ });
+
+ handModel.onResults(results=>{
+  if(!active || !results.multiHandLandmarks?.length)return;
+
   const p=results.multiHandLandmarks[0];
-  const wrist=p[0],thumb=p[4],index=p[8],middle=p[12],ring=p[16],pink=p[20];
-  const pinch=Math.hypot(thumb.x-index.x,thumb.y-index.y);
-  const folded=[8,12,16,20].filter(i=>p[i].y>p[i-2].y).length;
-  if(folded===4 && !window.fistAt){window.fistAt=Date.now()}
-  if(folded<3)window.fistAt=0;
-  if(window.fistAt && Date.now()-window.fistAt>1800){
-   ultron=!ultron;$("ultron").style.display=ultron?"block":"none";$("core").style.display=ultron?"none":"grid";window.fistAt=0;
+  const thumb=p[4];
+  const index=p[8];
+
+  const pinch=Math.hypot(
+   thumb.x-index.x,
+   thumb.y-index.y
+  );
+
+  const folded=[8,12,16,20].filter(i=>
+   p[i].y>p[i-2].y
+  ).length;
+
+  if(folded===4){
+   if(!fistSince)fistSince=Date.now();
+
+   if(Date.now()-fistSince>1800 && Date.now()-lastFistToggle>2500){
+    setUltron(!ultron);
+    lastFistToggle=Date.now();
+    fistSince=0;
+   }
+  }else{
+   fistSince=0;
   }
-  if(pinch<.045){
-   $("core").style.transform=`translate(calc(-50% + ${(index.x-.5)*180}px),calc(-50% + ${(index.y-.5)*120}px))`;
+
+  if(!ultron && pinch<.045){
+   $("core").style.transform=
+    `translate(calc(-50% + ${(index.x-.5)*150}px),calc(-50% + ${(index.y-.5)*100}px))`;
+  }else if(!ultron){
+   $("core").style.transform="translate(-50%,-50%)";
   }
  });
- const cam=new Camera($("camera"),{onFrame:async()=>{await hands.send({image:$("camera")})},width:320,height:240});
- if(cameraStream)cam.start();
+
+ startHandLoop();
 };
+
+async function startHandLoop(){
+ if(!active || !cameraStream || !$("camera").videoWidth){
+  requestAnimationFrame(startHandLoop);
+  return;
+ }
+
+ if(!handFrameBusy){
+  handFrameBusy=true;
+  try{
+   await handModel.send({image:$("camera")});
+  }catch(error){
+   console.warn("El takibi:",error);
+  }
+  handFrameBusy=false;
+ }
+
+ requestAnimationFrame(startHandLoop);
+}
+
 document.head.appendChild(handScript);
+
 </script>
 </body>
 </html>
