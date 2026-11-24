@@ -1,0 +1,214 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>J.A.R.V.I.S.</title>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#000;color:#7deaff;font-family:Arial,sans-serif;overflow:hidden}
+#standby{position:fixed;inset:0;background:#000;z-index:10}
+#app{display:none;position:fixed;inset:0;background:radial-gradient(ellipse at center,#061b2c 0%,#020810 48%,#000 100%)}
+#top{position:absolute;top:22px;left:25px;right:25px;display:flex;justify-content:space-between;letter-spacing:3px;font-size:12px}
+#clock{font-size:23px;letter-spacing:2px}
+#core{position:absolute;inset:0;width:100%;height:100%}
+.panel{position:absolute;border:1px solid #1684a888;background:#03142199;box-shadow:0 0 20px #008cff22;padding:15px;border-radius:8px}
+#left{left:25px;top:35%;width:210px}
+#right{right:25px;top:35%;width:210px;text-align:right}
+.small{font-size:10px;letter-spacing:2px;color:#4cb6d5}
+.value{font-size:19px;margin-top:9px}
+#bottom{position:absolute;bottom:25px;left:0;right:0;text-align:center;font-size:11px;letter-spacing:4px;color:#53cfff}
+#camera{position:absolute;right:20px;bottom:65px;width:120px;opacity:.12}
+#status{color:#42e6ff}
+#intro{position:absolute;top:18%;width:100%;text-align:center;letter-spacing:5px;font-size:14px}
+</style>
+</head>
+<body>
+<div id="standby"></div>
+<div id="app">
+  <div id="top">
+    <div>J.A.R.V.I.S. <span id="status">● ONLINE</span></div>
+    <div id="clock">00:00:00</div>
+  </div>
+  <div id="intro">JUST A RATHER VERY INTELLIGENT SYSTEM</div>
+  <canvas id="core"></canvas>
+  <div class="panel" id="left">
+    <div class="small">SYSTEM STATUS</div>
+    <div class="value">ACTIVE</div>
+    <div class="small" style="margin-top:15px">CAMERA</div>
+    <div class="value" id="camStatus">WAITING</div>
+    <div class="small" style="margin-top:15px">HAND TRACKING</div>
+    <div class="value" id="handStatus">READY</div>
+  </div>
+  <div class="panel" id="right">
+    <div class="small">LOCAL TIME</div>
+    <div class="value" id="time2">--:--</div>
+    <div class="small" style="margin-top:15px">WEATHER</div>
+    <div class="value">NOT CONNECTED</div>
+    <div class="small" style="margin-top:15px">PERSONAL SYSTEM</div>
+    <div class="value">JARVIS</div>
+  </div>
+  <div id="bottom">VOICE SYSTEM · HOLOGRAPHIC INTERFACE · GESTURE CONTROL</div>
+  <video id="camera" autoplay playsinline muted></video>
+</div>
+
+<script>
+let active=false;
+let audioContext, analyser, micStream;
+let lastClap=0, clapCount=0, lastLevel=0;
+let scene,camera3d,renderer,orb,ringGroup;
+let handStream=null;
+
+const standby=document.getElementById("standby");
+const app=document.getElementById("app");
+
+async function setupPermissions(){
+  try{
+    micStream=await navigator.mediaDevices.getUserMedia({audio:true});
+    audioContext=new (window.AudioContext||window.webkitAudioContext)();
+    const source=audioContext.createMediaStreamSource(micStream);
+    analyser=audioContext.createAnalyser();
+    analyser.fftSize=1024;
+    source.connect(analyser);
+    listenClaps();
+  }catch(e){
+    alert("Mikrofon izni verilmedi. Alkış kontrolü kullanılamayacak.");
+  }
+
+  try{
+    handStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}});
+    const video=document.getElementById("camera");
+    video.srcObject=handStream;
+    document.getElementById("camStatus").textContent="ACTIVE";
+  }catch(e){
+    document.getElementById("camStatus").textContent="DENIED";
+  }
+}
+
+function listenClaps(){
+  const data=new Uint8Array(analyser.frequencyBinCount);
+  function detect(){
+    if(!analyser)return;
+    analyser.getByteTimeDomainData(data);
+    let peak=0;
+    for(let i=0;i<data.length;i++){
+      peak=Math.max(peak,Math.abs(data[i]-128));
+    }
+    const now=Date.now();
+    if(peak>48 && lastLevel<18 && now-lastClap>180){
+      lastClap=now;
+      clapCount++;
+      if(clapCount===1){
+        setTimeout(()=>{
+          if(clapCount===1)clapCount=0;
+        },750);
+      }else if(clapCount>=2){
+        clapCount=0;
+        toggleJarvis();
+      }
+    }
+    lastLevel=peak;
+    requestAnimationFrame(detect);
+  }
+  detect();
+}
+
+function toggleJarvis(){
+  active=!active;
+  if(active){
+    standby.style.display="none";
+    app.style.display="block";
+    if(!scene)createHologram();
+    speak("Hoş geldiniz efendim. JARVIS sistemi aktif.");
+  }else{
+    app.style.display="none";
+    standby.style.display="block";
+    speak("JARVIS bekleme moduna geçiyor.");
+  }
+}
+
+function speak(text){
+  if(!("speechSynthesis" in window))return;
+  speechSynthesis.cancel();
+  const msg=new SpeechSynthesisUtterance(text);
+  msg.lang="tr-TR";
+  msg.rate=.92;
+  speechSynthesis.speak(msg);
+}
+
+function createHologram(){
+  const canvas=document.getElementById("core");
+  scene=new THREE.Scene();
+  camera3d=new THREE.PerspectiveCamera(45,innerWidth/innerHeight,.1,100);
+  camera3d.position.z=7;
+  renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
+  renderer.setSize(innerWidth,innerHeight);
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+
+  const geometry=new THREE.IcosahedronGeometry(1.25,2);
+  const material=new THREE.MeshBasicMaterial({
+    color:0x20cfff,wireframe:true,transparent:true,opacity:.8
+  });
+  orb=new THREE.Mesh(geometry,material);
+  scene.add(orb);
+
+  ringGroup=new THREE.Group();
+  for(let i=0;i<4;i++){
+    const ring=new THREE.Mesh(
+      new THREE.TorusGeometry(1.65+i*.17,.008,8,160),
+      new THREE.MeshBasicMaterial({color:0x1aaaff,transparent:true,opacity:.65})
+    );
+    ring.rotation.x=Math.PI/2+(i*.25);
+    ring.rotation.y=i*.45;
+    ringGroup.add(ring);
+  }
+  scene.add(ringGroup);
+
+  const particles=new THREE.BufferGeometry();
+  const positions=[];
+  for(let i=0;i<500;i++){
+    positions.push((Math.random()-.5)*8,(Math.random()-.5)*8,(Math.random()-.5)*4);
+  }
+  particles.setAttribute("position",new THREE.Float32BufferAttribute(positions,3));
+  scene.add(new THREE.Points(particles,new THREE.PointsMaterial({
+    color:0x29bfff,size:.018,transparent:true,opacity:.7
+  })));
+
+  animate();
+}
+
+function animate(){
+  requestAnimationFrame(animate);
+  if(!active)return;
+  orb.rotation.x+=.003;
+  orb.rotation.y+=.006;
+  ringGroup.rotation.y+=.002;
+  ringGroup.rotation.z+=.001;
+  renderer.render(scene,camera3d);
+}
+
+function updateClock(){
+  const now=new Date();
+  const time=now.toLocaleTimeString("tr-TR");
+  document.getElementById("clock").textContent=time;
+  document.getElementById("time2").textContent=time;
+}
+setInterval(updateClock,1000);
+updateClock();
+
+window.addEventListener("resize",()=>{
+  if(!renderer)return;
+  camera3d.aspect=innerWidth/innerHeight;
+  camera3d.updateProjectionMatrix();
+  renderer.setSize(innerWidth,innerHeight);
+});
+
+// İlk izinler için kullanıcı etkileşimi gerekir.
+standby.addEventListener("click",()=>{
+  if(!micStream)setupPermissions();
+},{once:true});
+</script>
+</body>
+</html>
